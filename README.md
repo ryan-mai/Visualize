@@ -6,7 +6,7 @@ A Discord bot that allows users to upload 3D models and apply various effects us
 
 # DEV LOG 1. 🚀
 ---
-I Used open3d library with documentation + AI to develop three functions. I initially built this bot to provide myself a way to develop low poly renders as I have recently begun 3D modeling and printing for my past hackathons and as a personal hobby at my local library.
+I Used open3D library with documentation + AI to develop three functions. I initially built this bot to provide myself a way to develop low poly renders as I have recently begun 3D modeling and printing for my past hackathons and as a personal hobby at my local library.
 
 Since I am interested in hardware, 3D printing is obviously crucial to polish my product. For example, for an AI camera I developed I built a case to hold the design. However, I think it was too complex and may also have greatly increased print times due to inefficient design.
 
@@ -18,6 +18,7 @@ In the future, if I continue to work on it, I will build a working website to go
 
 One key feature is textures. Currently, I am unsure why, but there is rendering issues when I try to texturized the model. I may be required to use Blender's API if I plan to have texturized models. In addition, I am eyeing an interactive 3D model either on Discord itself using a bunch of images from various angles and then the user can use buttons to play with the perspective. Alternatively, I can link them a web browser and create a playground for them to use.
 
+UPDATE: It seems I CANNOT use open3D in order to keep the discord bot up on render...For now, if you want to use the app, you will have to follow the instructions below and run `python bot.py`
 ---
 
 ## Features
