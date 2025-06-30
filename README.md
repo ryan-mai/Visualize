@@ -2,6 +2,11 @@
 
 A Discord bot that allows users to upload 3D models and apply various effects using Open3D, including 360° video rendering.
 
+## TO Find Out How to Use the Bot Skip Past My Dev Log
+
+### DEV LOG 1.
+I Used open3d library with documentation + AI to develop three functions. I initially built this bot to provide myself a way to develop low poly renders as I have recently begun 3D modeling and printing for my past hackathons and as a personal hobby at my local library. Since I am interested in hardware, 3D printing is obviously crucial to polish my product. For example, for an AI camera I developed I built a case to hold the design. However, I think it was too complex and may also have greatly increased print times due to inefficient design. As a result, I thought that a discord bot to convert my 3D models and others would be useful. The project is not fully polished, however, majority of the things I wanted to implement work. In addition, you can notice there are two other functions dot and crinkle which are more humorous features I discovered on the open3d docs, so I was like why not! Furthermore, this was my second time building a discord bot, so it was challenging to implement an already difficult task of rendering images, models, and videos of the finished product. While I did use AI for assistance, you can notice in the tests folder, I wrote the core features of the code. The reason for the length of code is due to discord's nit picky lines of code, requiring numerous lines of code for the same feature that can be written in under 10 lines of code. In the future, if I continue to work on it, I will build a working website to go alongside gifs and other interactive features, mainly textures. I am unsure why, but there is rendering issues when I try. I may be required to use Blender's API if I plan to have texturized models. In addition, I am eyeing an interactive 3D model either on Discord itself using a bunch of images from various angles and then the user can use buttons to play with the perspective. Alternatively, I can link them a web browser and create a playground for them to use.
+
 ## Features
 
 ### Upload & Render Commands
