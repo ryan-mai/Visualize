@@ -9,10 +9,13 @@ import asyncio
 from typing import Optional
 import cv2
 import imageio.v2 as imageio
-
+from flask import Flask
+from threading import Thread
 
 intents = discord.Intents.default()
 intents.message_content = True
+intents.members = True
+
 bot = commands.Bot(command_prefix='!', intents=intents)
 
 class CrinkleBot:
@@ -359,6 +362,76 @@ class CrinkleBot:
         return mesh_path
 
 crinkle_bot = CrinkleBot()
+
+import random
+from datetime import timedelta
+
+@bot.tree.command(name="giveaway", description="Start a giveaway in this channel!")
+@app_commands.describe(
+    prize="What is the prize for the giveaway?",
+    duration="How long should the giveaway last (in minutes)?",
+    winners="Number of winners to pick"
+)
+async def giveaway_command(
+    interaction: discord.Interaction,
+    prize: str,
+    duration: int,
+    winners: int = 1
+):
+    if duration <= 0:
+        await interaction.response.send_message("❌ Duration must be a positive number.", ephemeral=True)
+        return
+    if winners < 1:
+        await interaction.response.send_message("❌ There must be at least one winner.", ephemeral=True)
+        return
+
+    await interaction.response.defer()
+
+    embed = discord.Embed(
+        title="🎉 Giveaway Started!",
+        description=f"**Prize:** {prize}\n**Hosted by:** {interaction.user.mention}\nReact with 🎉 to enter!\n\n⏳ Ends in {duration} minute(s)\n🏆 Winner(s): {winners}",
+        color=0x00ff99
+    )
+    embed.set_footer(text="Giveaway ends soon...")
+
+    message = await interaction.followup.send(embed=embed)
+    await message.add_reaction("🎉")
+
+    await asyncio.sleep(duration * 60)
+
+    updated_message = await message.channel.fetch_message(message.id)
+    users = [user async for user in updated_message.reactions[0].users() if not user.bot]
+
+    if not users:
+        await message.channel.send("❌ No valid entries, giveaway cancelled.")
+        return
+
+    winner_count = min(winners, len(users))
+    selected = random.sample(users, k=winner_count)
+
+    winners_text = ', '.join(user.mention for user in selected)
+    result_embed = discord.Embed(
+        title="🎊 Giveaway Ended!",
+        description=f"**Prize:** {prize}\n🏆 Winner(s): {winners_text}",
+        color=0xFFD700
+    )
+    await message.channel.send(embed=result_embed)
+
+@bot.event
+async def on_member_join(member):
+    role_name = "aura farmers"
+
+    # Find the role by name
+    role = discord.utils.get(member.guild.roles, name=role_name)
+
+    if role:
+        try:
+            await member.add_roles(role)
+            print(f"✅ Assigned '{role.name}' to {member.name}")
+        except Exception as e:
+            print(f"❌ Failed to assign role: {e}")
+    else:
+        print(f"⚠️ Role '{role_name}' not found in {member.guild.name}")
 
 @bot.event
 async def on_ready():
@@ -792,7 +865,22 @@ async def on_command_error(ctx, error):
     else:
         print(f"Command error: {error}")
 
+app = Flask('')
+
+@app.route('/')
+def home():
+    return "I'm alive!", 200
+
+def run():
+    app.run(host='0.0.0.0', port=8080)
+
+def keep_alive():
+    t = Thread(target=run)
+    t.daemon = True
+    t.start()
+
 if __name__ == "__main__":
+    keep_alive()
     import dotenv
     dotenv.load_dotenv()
 
