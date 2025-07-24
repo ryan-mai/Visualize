@@ -29,7 +29,7 @@ UPDATE: It seems I CANNOT use open3D in order to keep the discord bot up on rend
 
 ### Effect Commands (Require uploaded mesh)
 - `/crinkle` - Apply crinkle effect with noise
-  - **noise**: Noise level (0.0 to 1.0) 
+  - **noise**: Noise level (0.0 to 1.0) - I recommend you start with a lower number
   - **output_type**: "image", "video", or "mesh"
 - `/dot` - Create dotted mesh effect
   - **output_type**: "image", "video", or "mesh"  
@@ -104,19 +104,6 @@ Once the bot is running and invited to your server:
 3. **Use info commands**:
    - `/info` - See current mesh information and bot statistics
    - `/help3d` - Get help with all commands
-
-## Output Types
-
-- **image**: Generates a PNG preview of the effect
-- **video**: Generates a 360° rotating MP4 video (2-3 seconds)
-- **mesh**: Generates a downloadable .obj file
-
-## 360° Video Features
-
-- **Smooth Orbital Rotation**: Camera orbits around the model center
-- **Automatic Centering**: Model is automatically centered and scaled
-- **High Quality**: 800x600 resolution at 24fps for smooth playback
-- **Multiple Effects**: All effects (crinkle, dot, poly) support video output
 
 ## Notes
 
