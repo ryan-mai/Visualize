@@ -34,70 +34,87 @@ class CrinkleBot:
             return False
 
     def _render_geometry(self, geometry, filename_prefix: str) -> str:
-        # Use OffscreenRenderer for headless rendering
-        width, height = 800, 600
-        renderer = o3d.visualization.rendering.OffscreenRenderer(width, height)
-        scene = renderer.scene
-        scene.set_background([0.2, 0.2, 0.2, 1.0])
-        mat = o3d.visualization.rendering.MaterialRecord()
-        if hasattr(geometry, 'triangles'):
-            mat.shader = "defaultLit"
-        else:
-            mat.shader = "defaultUnlit"
-            mat.point_size = 4.0
-        scene.add_geometry("mesh", geometry, mat)
-        # Camera setup
-        bbox = geometry.get_axis_aligned_bounding_box()
-        center = bbox.get_center()
-        extent = bbox.get_extent()
-        radius = np.linalg.norm(extent) * 1.5
-        cam_pos = center + [0, 0, radius]
-        renderer.setup_camera(60.0, bbox, cam_pos)
-        # Render and save image
-        img = renderer.render_to_image()
+        vis = o3d.visualization.Visualizer()
+        vis.create_window(visible=False, width=800, height=600)
+        vis.add_geometry(geometry)
+
+        opt = vis.get_render_option()
+        if opt is not None:
+            opt.background_color = np.asarray([0.2, 0.2, 0.2])
+            opt.light_on = True
+            if hasattr(geometry, 'triangles'):
+                opt.mesh_show_wireframe = False
+            else:
+                opt.point_size = 4.0
+
+        view_ctrl = vis.get_view_control()
+        vis.poll_events()
+        vis.update_renderer()
+        if view_ctrl is not None:
+            view_ctrl.set_zoom(0.7)
+            view_ctrl.rotate(300, 200)
+        vis.poll_events()
+        vis.update_renderer()
+
         temp_dir = tempfile.gettempdir()
         image_path = os.path.join(temp_dir, f"{filename_prefix}_{np.random.randint(1000, 9999)}.png")
-        o3d.io.write_image(image_path, img)
-        renderer.release()
+        vis.capture_screen_image(image_path)
+        vis.destroy_window()
         return image_path
 
     def _create_video(self, geometry, filename_prefix: str, frames: int = 72) -> str:
-        width, height = 800, 600
-        renderer = o3d.visualization.rendering.OffscreenRenderer(width, height)
-        scene = renderer.scene
-        scene.set_background([0.2, 0.2, 0.2, 1.0])
-        mat = o3d.visualization.rendering.MaterialRecord()
-        if hasattr(geometry, 'triangles'):
-            mat.shader = "defaultLit"
-        else:
-            mat.shader = "defaultUnlit"
-            mat.point_size = 4.0
-        scene.add_geometry("mesh", geometry, mat)
+        vis = o3d.visualization.Visualizer()
+        vis.create_window(visible=False, width=800, height=600)
+        vis.add_geometry(geometry)
+
+        opt = vis.get_render_option()
+        if opt is not None:
+            opt.background_color = np.asarray([0.2, 0.2, 0.2])
+            opt.light_on = True
+            if hasattr(geometry, 'triangles'):
+                opt.mesh_show_wireframe = False
+            else:
+                opt.point_size = 4.0
+
+        view_ctrl = vis.get_view_control()
+        vis.poll_events()
+        vis.update_renderer()
+
         bbox = geometry.get_axis_aligned_bounding_box()
         center = bbox.get_center()
-        extent = bbox.get_extent()
-        radius = np.linalg.norm(extent) * 1.5
+        radius = np.linalg.norm(bbox.get_extent()) * 1.5
+
         temp_dir = tempfile.gettempdir()
         frames_dir = os.path.join(temp_dir, f"frames_{np.random.randint(1000, 9999)}")
         os.makedirs(frames_dir, exist_ok=True)
+
         frame_paths = []
         for i in range(frames):
             angle = (i / frames) * 2 * np.pi
             cam_x = center[0] + radius * np.cos(angle)
             cam_z = center[2] + radius * np.sin(angle)
-            cam_pos = [cam_x, center[1], cam_z]
-            renderer.setup_camera(60.0, bbox, cam_pos)
-            img = renderer.render_to_image()
+
+            if view_ctrl is not None:
+                view_ctrl.set_front([center[0] - cam_x, center[1] - center[1], center[2] - cam_z])
+                view_ctrl.set_up([0, 1, 0])
+                view_ctrl.set_lookat(center)
+                view_ctrl.set_zoom(0.7)
+            vis.poll_events()
+            vis.update_renderer()
+
             frame_path = os.path.join(frames_dir, f"frame_{i:04d}.png")
-            o3d.io.write_image(frame_path, img)
+            vis.capture_screen_image(frame_path)
             frame_paths.append(frame_path)
-        renderer.release()
+
+        vis.destroy_window()
+
         video_path = os.path.join(temp_dir, f"{filename_prefix}_360_{np.random.randint(1000, 9999)}.mp4")
         with imageio.get_writer(video_path, fps=20, codec='libx264', quality=8) as writer:
             for frame_path in frame_paths:
                 if os.path.exists(frame_path):
                     writer.append_data(imageio.imread(frame_path))
                     os.remove(frame_path)
+
         try:
             os.rmdir(frames_dir)
         except:
