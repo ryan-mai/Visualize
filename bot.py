@@ -50,8 +50,9 @@ class CrinkleBot:
         view_ctrl = vis.get_view_control()
         vis.poll_events()
         vis.update_renderer()
-        view_ctrl.set_zoom(0.7)
-        view_ctrl.rotate(300, 200)
+        if view_ctrl is not None:
+            view_ctrl.set_zoom(0.7)
+            view_ctrl.rotate(300, 200)
         vis.poll_events()
         vis.update_renderer()
 
@@ -93,10 +94,11 @@ class CrinkleBot:
             cam_x = center[0] + radius * np.cos(angle)
             cam_z = center[2] + radius * np.sin(angle)
 
-            view_ctrl.set_front([center[0] - cam_x, center[1] - center[1], center[2] - cam_z])
-            view_ctrl.set_up([0, 1, 0])
-            view_ctrl.set_lookat(center)
-            view_ctrl.set_zoom(0.7)
+            if view_ctrl is not None:
+                view_ctrl.set_front([center[0] - cam_x, center[1] - center[1], center[2] - cam_z])
+                view_ctrl.set_up([0, 1, 0])
+                view_ctrl.set_lookat(center)
+                view_ctrl.set_zoom(0.7)
             vis.poll_events()
             vis.update_renderer()
 
