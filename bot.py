@@ -39,20 +39,18 @@ class CrinkleBot:
         vis.add_geometry(geometry)
 
         opt = vis.get_render_option()
-        if opt is not None:
-            opt.background_color = np.asarray([0.2, 0.2, 0.2])
-            opt.light_on = True
-            if hasattr(geometry, 'triangles'):
-                opt.mesh_show_wireframe = False
-            else:
-                opt.point_size = 4.0
+        opt.background_color = np.asarray([0.2, 0.2, 0.2])
+        opt.light_on = True
+        if hasattr(geometry, 'triangles'):
+            opt.mesh_show_wireframe = False
+        else:
+            opt.point_size = 4.0
 
         view_ctrl = vis.get_view_control()
         vis.poll_events()
         vis.update_renderer()
-        if view_ctrl is not None:
-            view_ctrl.set_zoom(0.7)
-            view_ctrl.rotate(300, 200)
+        view_ctrl.set_zoom(0.7)
+        view_ctrl.rotate(300, 200)
         vis.poll_events()
         vis.update_renderer()
 
@@ -68,13 +66,12 @@ class CrinkleBot:
         vis.add_geometry(geometry)
 
         opt = vis.get_render_option()
-        if opt is not None:
-            opt.background_color = np.asarray([0.2, 0.2, 0.2])
-            opt.light_on = True
-            if hasattr(geometry, 'triangles'):
-                opt.mesh_show_wireframe = False
-            else:
-                opt.point_size = 4.0
+        opt.background_color = np.asarray([0.2, 0.2, 0.2])
+        opt.light_on = True
+        if hasattr(geometry, 'triangles'):
+            opt.mesh_show_wireframe = False
+        else:
+            opt.point_size = 4.0
 
         view_ctrl = vis.get_view_control()
         vis.poll_events()
@@ -94,11 +91,10 @@ class CrinkleBot:
             cam_x = center[0] + radius * np.cos(angle)
             cam_z = center[2] + radius * np.sin(angle)
 
-            if view_ctrl is not None:
-                view_ctrl.set_front([center[0] - cam_x, center[1] - center[1], center[2] - cam_z])
-                view_ctrl.set_up([0, 1, 0])
-                view_ctrl.set_lookat(center)
-                view_ctrl.set_zoom(0.7)
+            view_ctrl.set_front([center[0] - cam_x, center[1] - center[1], center[2] - cam_z])
+            view_ctrl.set_up([0, 1, 0])
+            view_ctrl.set_lookat(center)
+            view_ctrl.set_zoom(0.7)
             vis.poll_events()
             vis.update_renderer()
 
@@ -184,11 +180,11 @@ async def on_member_join(member):
         await member.add_roles(role)
 
 async def process_command(interaction, processor_func, *args, output_type="image"):
-    await interaction.response.defer()
     if not crinkle_bot.has_mesh():
-        await interaction.followup.send("❌ No mesh loaded! Use `/upload` first", ephemeral=True)
+        await interaction.response.send_message("❌ No mesh loaded! Use `/upload` first", ephemeral=True)
         return
 
+    await interaction.response.defer()
     try:
         result_path = await asyncio.to_thread(processor_func, *args, output_type)
 
