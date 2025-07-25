@@ -39,12 +39,13 @@ class CrinkleBot:
         vis.add_geometry(geometry)
 
         opt = vis.get_render_option()
-        opt.background_color = np.asarray([0.2, 0.2, 0.2])
-        opt.light_on = True
-        if hasattr(geometry, 'triangles'):
-            opt.mesh_show_wireframe = False
-        else:
-            opt.point_size = 4.0
+        if opt is not None:
+            opt.background_color = np.asarray([0.2, 0.2, 0.2])
+            opt.light_on = True
+            if hasattr(geometry, 'triangles'):
+                opt.mesh_show_wireframe = False
+            else:
+                opt.point_size = 4.0
 
         view_ctrl = vis.get_view_control()
         vis.poll_events()
@@ -66,12 +67,13 @@ class CrinkleBot:
         vis.add_geometry(geometry)
 
         opt = vis.get_render_option()
-        opt.background_color = np.asarray([0.2, 0.2, 0.2])
-        opt.light_on = True
-        if hasattr(geometry, 'triangles'):
-            opt.mesh_show_wireframe = False
-        else:
-            opt.point_size = 4.0
+        if opt is not None:
+            opt.background_color = np.asarray([0.2, 0.2, 0.2])
+            opt.light_on = True
+            if hasattr(geometry, 'triangles'):
+                opt.mesh_show_wireframe = False
+            else:
+                opt.point_size = 4.0
 
         view_ctrl = vis.get_view_control()
         vis.poll_events()
@@ -180,11 +182,11 @@ async def on_member_join(member):
         await member.add_roles(role)
 
 async def process_command(interaction, processor_func, *args, output_type="image"):
+    await interaction.response.defer()
     if not crinkle_bot.has_mesh():
-        await interaction.response.send_message("❌ No mesh loaded! Use `/upload` first", ephemeral=True)
+        await interaction.followup.send("❌ No mesh loaded! Use `/upload` first", ephemeral=True)
         return
 
-    await interaction.response.defer()
     try:
         result_path = await asyncio.to_thread(processor_func, *args, output_type)
 
